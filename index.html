@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduCraft AI — Créateur pédagogique</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0a1a;
+    --card: rgba(255,255,255,0.06);
+    --border: rgba(255,255,255,0.12);
+    --purple: #7c3aed;
+    --purple-light: #a855f7;
+    --text: #f0ebff;
+    --muted: #a78bfa;
+    --soft: #c4b5fd;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: linear-gradient(135deg, #0c0a1a 0%, #180a38 50%, #0a1830 100%);
+    min-height: 100vh;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    padding-bottom: 60px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes pulse { 0%,100%{opacity:.7} 50%{opacity:1} }
+
+  /* HEADER */
+  header {
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    backdrop-filter: blur(12px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo-icon {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--purple), var(--purple-light));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .logo-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px; font-weight: 700; color: #fff;
+  }
+  .logo-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .badge {
+    margin-left: auto;
+    background: rgba(124,58,237,0.15);
+    border: 1px solid rgba(168,85,247,0.3);
+    color: var(--soft); border-radius: 99px;
+    padding: 4px 12px; font-size: 11px; font-weight: 600;
+  }
+
+  /* MAIN */
+  .container { max-width: 700px; margin: 0 auto; padding: 30px 16px 0; }
+
+  .hero { text-align: center; margin-bottom: 28px; animation: fadeUp 0.5s ease; }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 5vw, 36px);
+    font-weight: 700; line-height: 1.25;
+    color: #fff; margin-bottom: 10px;
+  }
+  .hero h1 span { color: var(--purple-light); }
+  .hero p { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+  /* CARD */
+  .card {
+    background: var(--card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px 20px;
+    margin-bottom: 20px;
+    animation: fadeUp 0.5s ease 0.1s both;
+  }
+
+  /* TABS */
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+  .tab-btn {
+    padding: 8px 16px;
+    border-radius: 99px;
+    border: 1.5px solid rgba(255,255,255,0.15);
+    background: transparent;
+    color: var(--soft);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .tab-btn.active {
+    background: linear-gradient(135deg, var(--purple), var(--purple-light));
+    border-color: var(--purple-light);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(124,58,237,0.35);
+  }
+
+  /* FORM */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media(max-width: 480px) { .form-grid { grid-template-columns: 1fr; } }
+
+  label {
+    display: block;
+    color: var(--soft);
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.6px;
+    margin-bottom: 7px;
+    text-transform: uppercase;
+  }
+  select, input, textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    color: #fff;
+    padding: 11px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+  select:focus, input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--purple-light);
+    background: rgba(124,58,237,0.1);
+  }
+  select option { background: #1a0a3c; color: #fff; }
+  textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+  ::placeholder { color: #6b5fa0; }
+
+  .field { margin-bottom: 14px; }
+
+  /* BUTTON */
+  .btn-generate {
+    width: 100%; padding: 15px;
+    background: linear-gradient(135deg, var(--purple), var(--purple-light));
+    border: none; border-radius: 12px;
+    color: #fff; font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 8px 24px rgba(124,58,237,0.4);
+    letter-spacing: 0.3px;
+    margin-top: 6px;
+  }
+  .btn-generate:disabled {
+    background: rgba(124,58,237,0.35);
+    box-shadow: none; cursor: not-allowed;
+  }
+  .btn-generate:not(:disabled):active { transform: scale(0.98); }
+
+  /* ERROR */
+  .error-msg {
+    background: rgba(127,29,29,0.2);
+    border: 1px solid rgba(248,113,113,0.3);
+    color: #f87171; border-radius: 8px;
+    padding: 10px 14px; font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  /* LOADING */
+  .loading-wrap { text-align: center; padding: 36px 0; animation: fadeUp 0.3s ease; }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid rgba(168,85,247,0.2);
+    border-top-color: var(--purple-light);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 14px;
+  }
+  .loading-text { color: var(--muted); font-size: 14px; animation: pulse 1.5s ease infinite; }
+
+  /* RESULT */
+  .result-card {
+    background: #faf9ff;
+    border: 1.5px solid #ede9fe;
+    border-radius: 16px;
+    padding: 22px 20px;
+    animation: fadeUp 0.4s ease;
+  }
+  .result-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px;
+  }
+  .result-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px; color: var(--purple); font-weight: 700;
+  }
+  .btn-copy {
+    background: #f3f0ff; color: var(--purple);
+    border: none; border-radius: 8px;
+    padding: 6px 14px; font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-copy.copied { background: #d1fae5; color: #065f46; }
+  .result-content {
+    font-family: 'Source Serif 4', serif;
+    font-size: 14px; line-height: 1.85;
+    color: #1e1b2e; white-space: pre-wrap;
+  }
+
+  /* HISTORY */
+  .history-section { margin-top: 30px; animation: fadeUp 0.5s ease; }
+  .history-title {
+    font-family: 'Playfair Display', serif;
+    color: var(--soft); font-size: 15px; margin-bottom: 12px;
+  }
+  .history-item {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 12px; padding: 12px 16px;
+    cursor: pointer; margin-bottom: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+    transition: background 0.2s;
+  }
+  .history-item:active { background: rgba(124,58,237,0.1); }
+  .history-tab { color: var(--purple-light); font-weight: 700; font-size: 12px; }
+  .history-topic { color: var(--text); font-size: 13px; margin-left: 8px; }
+  .history-time { color: #6b5fa0; font-size: 11px; }
+
+  /* PRICING */
+  .pricing { margin-top: 40px; animation: fadeUp 0.5s ease 0.2s both; }
+  .pricing-title {
+    font-family: 'Playfair Display', serif;
+    color: #fff; font-size: 20px; text-align: center; margin-bottom: 20px;
+  }
+  .pricing-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  @media(max-width: 480px) { .pricing-grid { grid-template-columns: 1fr; } }
+  .pricing-card {
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: 16px; padding: 20px 16px;
+    text-align: center; position: relative;
+  }
+  .pricing-card.popular {
+    background: rgba(124,58,237,0.12);
+    border-color: rgba(168,85,247,0.4);
+  }
+  .popular-badge {
+    position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+    background: linear-gradient(90deg, var(--purple), var(--purple-light));
+    color: #fff; font-size: 9px; font-weight: 700;
+    padding: 3px 10px; border-radius: 99px; letter-spacing: 1px;
+    white-space: nowrap;
+  }
+  .plan-name { color: var(--soft); font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+  .plan-price {
+    font-family: 'Playfair Display', serif;
+    color: #fff; font-size: 22px; font-weight: 700; margin-bottom: 12px;
+  }
+  .plan-feature { color: var(--muted); font-size: 11px; margin-bottom: 5px; }
+  .plan-feature::before { content: "✓ "; color: var(--purple-light); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-icon">✦</div>
+  <div>
+    <div class="logo-name">EduCraft AI</div>
+    <div class="logo-sub">Créateur de contenu pédagogique</div>
+  </div>
+  <div class="badge">✦ Plan Pro</div>
+</header>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>Créez vos contenus<br><span>pédagogiques en secondes</span></h1>
+    <p>Cours, quiz, fiches résumé et plans de leçon<br>générés par IA — prêts à l'emploi.</p>
+  </div>
+
+  <div class="card">
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="setTab(this,'Cours')">Cours</button>
+      <button class="tab-btn" onclick="setTab(this,'Quiz')">Quiz</button>
+      <button class="tab-btn" onclick="setTab(this,'Fiche résumé')">Fiche résumé</button>
+      <button class="tab-btn" onclick="setTab(this,'Plan de leçon')">Plan de leçon</button>
+    </div>
+
+    <!-- FORM -->
+    <div class="form-grid">
+      <div>
+        <label>Matière</label>
+        <select id="subject">
+          <option value="">Choisir...</option>
+          <option>Mathématiques</option>
+          <option>Français</option>
+          <option>Histoire-Géo</option>
+          <option>Sciences</option>
+          <option>Anglais</option>
+          <option>Philosophie</option>
+          <option>Autre</option>
+        </select>
+      </div>
+      <div>
+        <label>Niveau</label>
+        <select id="level">
+          <option value="">Choisir...</option>
+          <option>Primaire</option>
+          <option>Collège</option>
+          <option>Lycée</option>
+          <option>Université</option>
+          <option>Formation pro</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Sujet / Thème *</label>
+      <input type="text" id="topic" placeholder="Ex: La Révolution Française">
+    </div>
+
+    <div class="form-grid">
+      <div>
+        <label>Durée</label>
+        <input type="text" id="duration" placeholder="Ex: 1h, 45 min">
+      </div>
+      <div>
+        <label>Instructions supplémentaires</label>
+        <input type="text" id="extra" placeholder="Ex: élèves en difficulté...">
+      </div>
+    </div>
+
+    <div id="error-msg" class="error-msg" style="display:none"></div>
+
+    <button class="btn-generate" id="gen-btn" onclick="generate()">
+      ✦ Générer — <span id="btn-label">Cours</span>
+    </button>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-wrap" id="loading" style="display:none">
+    <div class="spinner"></div>
+    <div class="loading-text">L'IA rédige votre contenu…</div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="card" id="result-wrap" style="display:none">
+    <div class="result-card">
+      <div class="result-header">
+        <span class="result-label">Contenu généré</span>
+        <button class="btn-copy" id="copy-btn" onclick="copyResult()">Copier</button>
+      </div>
+      <div class="result-content" id="result-text"></div>
+    </div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="history-section" id="history-section" style="display:none">
+    <div class="history-title">Historique récent</div>
+    <div id="history-list"></div>
+  </div>
+
+  <!-- PRICING -->
+  <div class="pricing">
+    <div class="pricing-title">Tarifs simples et transparents</div>
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="plan-name">Starter</div>
+        <div class="plan-price">9€<small style="font-size:13px;font-family:'DM Sans',sans-serif;color:#a78bfa">/mois</small></div>
+        <div class="plan-feature">50 générations/mois</div>
+        <div class="plan-feature">Cours & Quiz</div>
+        <div class="plan-feature">Copier-coller</div>
+      </div>
+      <div class="pricing-card popular">
+        <div class="popular-badge">POPULAIRE</div>
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">29€<small style="font-size:13px;font-family:'DM Sans',sans-serif;color:#a78bfa">/mois</small></div>
+        <div class="plan-feature">Illimité</div>
+        <div class="plan-feature">Tous les types</div>
+        <div class="plan-feature">Export Word/PDF</div>
+        <div class="plan-feature">Historique</div>
+      </div>
+      <div class="pricing-card">
+        <div class="plan-name">École</div>
+        <div class="plan-price">99€<small style="font-size:13px;font-family:'DM Sans',sans-serif;color:#a78bfa">/mois</small></div>
+        <div class="plan-feature">Multi-enseignants</div>
+        <div class="plan-feature">Dashboard admin</div>
+        <div class="plan-feature">Support prioritaire</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let currentTab = "Cours";
+let history = [];
+let currentResult = "";
+
+function setTab(btn, tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentTab = tab;
+  document.getElementById('btn-label').textContent = tab;
+  document.getElementById('result-wrap').style.display = 'none';
+
+  const placeholders = {
+    "Cours": "Ex: La Révolution Française",
+    "Quiz": "Ex: Les fractions",
+    "Fiche résumé": "Ex: La photosynthèse",
+    "Plan de leçon": "Ex: Introduction à l'algèbre"
+  };
+  document.getElementById('topic').placeholder = placeholders[tab];
+}
+
+function buildPrompt() {
+  const subject = document.getElementById('subject').value;
+  const level = document.getElementById('level').value;
+  const topic = document.getElementById('topic').value;
+  const duration = document.getElementById('duration').value;
+  const extra = document.getElementById('extra').value;
+
+  const base = `Tu es un expert en pédagogie. Génère en français un contenu professionnel et structuré prêt à l'emploi pour un enseignant.
+
+Matière : ${subject || "non précisée"}
+Niveau : ${level || "non précisé"}
+Sujet : ${topic}
+${duration ? "Durée : " + duration : ""}
+${extra ? "Instructions : " + extra : ""}
+`;
+
+  const instructions = {
+    "Cours": `\nCrée un cours complet avec :\n- Introduction accrocheuse\n- Objectifs pédagogiques (3-5)\n- Contenu en parties claires avec titres\n- Exemples concrets et définitions\n- Conclusion et synthèse\n- Questions de vérification`,
+    "Quiz": `\nCrée un quiz de 8 questions QCM avec :\n- Difficulté progressive\n- 4 options par question (A, B, C, D)\n- Bonne réponse indiquée\n- Brève explication pour chaque réponse`,
+    "Fiche résumé": `\nCrée une fiche résumé avec :\n- Points essentiels (bullet points)\n- Définitions clés\n- Formules ou règles importantes\n- Mini-exercice d'application\n- Astuces mémo`,
+    "Plan de leçon": `\nCrée un plan de leçon avec :\n- Objectifs SMART\n- Matériel nécessaire\n- Déroulement minute par minute\n- Activités élèves\n- Modalités d'évaluation\n- Différenciation pédagogique`
+  };
+
+  return base + instructions[currentTab];
+}
+
+async function generate() {
+  const topic = document.getElementById('topic').value.trim();
+  const errorEl = document.getElementById('error-msg');
+
+  if (!topic) {
+    errorEl.textContent = "⚠ Veuillez entrer un sujet ou thème.";
+    errorEl.style.display = 'block';
+    return;
+  }
+  errorEl.style.display = 'none';
+
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  btn.textContent = "Génération en cours…";
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('result-wrap').style.display = 'none';
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: buildPrompt() }]
+      })
+    });
+
+    const data = await response.json();
+    const text = (data.content || []).map(b => b.text || "").join("\n");
+
+    currentResult = text;
+    document.getElementById('result-text').textContent = text;
+    document.getElementById('result-wrap').style.display = 'block';
+
+    // Add to history
+    const subject = document.getElementById('subject').value;
+    const time = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    history.unshift({ tab: currentTab, topic, subject, content: text, time });
+    if (history.length > 5) history.pop();
+    renderHistory();
+
+  } catch (e) {
+    errorEl.textContent = "⚠ Erreur de connexion. Veuillez réessayer.";
+    errorEl.style.display = 'block';
+  }
+
+  document.getElementById('loading').style.display = 'none';
+  btn.disabled = false;
+  btn.innerHTML = '✦ Générer — <span id="btn-label">' + currentTab + '</span>';
+}
+
+function copyResult() {
+  navigator.clipboard.writeText(currentResult).catch(() => {
+    // Fallback for mobile
+    const ta = document.createElement('textarea');
+    ta.value = currentResult;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
+  const btn = document.getElementById('copy-btn');
+  btn.textContent = "✓ Copié !";
+  btn.classList.add('copied');
+  setTimeout(() => { btn.textContent = "Copier"; btn.classList.remove('copied'); }, 1800);
+}
+
+function renderHistory() {
+  const section = document.getElementById('history-section');
+  const list = document.getElementById('history-list');
+  if (history.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  list.innerHTML = history.map((item, i) => `
+    <div class="history-item" onclick="loadHistory(${i})">
+      <div>
+        <span class="history-tab">${item.tab}</span>
+        <span class="history-topic">${item.topic}</span>
+        ${item.subject ? `<span style="color:#6b5fa0;font-size:11px"> · ${item.subject}</span>` : ''}
+      </div>
+      <span class="history-time">${item.time}</span>
+    </div>
+  `).join('');
+}
+
+function loadHistory(i) {
+  currentResult = history[i].content;
+  document.getElementById('result-text').textContent = history[i].content;
+  document.getElementById('result-wrap').style.display = 'block';
+  window.scrollTo({ top: document.getElementById('result-wrap').offsetTop - 20, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
