@@ -1,231 +1,169 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EduCraft AI — Créateur pédagogique</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600;700&family=Source+Serif+4:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0c0a1a;
-    --card: rgba(255,255,255,0.06);
-    --border: rgba(255,255,255,0.12);
-    --purple: #7c3aed;
-    --purple-light: #a855f7;
-    --text: #f0ebff;
-    --muted: #a78bfa;
-    --soft: #c4b5fd;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: linear-gradient(135deg, #0c0a1a 0%, #180a38 50%, #0a1830 100%);
-    min-height: 100vh;
-    font-family: 'DM Sans', sans-serif;
-    color: var(--text);
-    padding-bottom: 60px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-  @keyframes pulse { 0%,100%{opacity:.7} 50%{opacity:1} }
-  header {
-    background: rgba(255,255,255,0.03);
-    border-bottom: 1px solid var(--border);
-    padding: 18px 20px;
-    display: flex; align-items: center; gap: 12px;
-    backdrop-filter: blur(12px);
-    position: sticky; top: 0; z-index: 100;
-  }
-  .logo-icon {
-    width: 38px; height: 38px;
-    background: linear-gradient(135deg, var(--purple), var(--purple-light));
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; flex-shrink: 0;
-  }
-  .logo-name { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; color: #fff; }
-  .logo-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
-  .badge { margin-left: auto; background: rgba(124,58,237,0.15); border: 1px solid rgba(168,85,247,0.3); color: var(--soft); border-radius: 99px; padding: 4px 12px; font-size: 11px; font-weight: 600; }
-  .container { max-width: 700px; margin: 0 auto; padding: 30px 16px 0; }
-  .hero { text-align: center; margin-bottom: 28px; animation: fadeUp 0.5s ease; }
-  .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(22px, 5vw, 36px); font-weight: 700; line-height: 1.25; color: #fff; margin-bottom: 10px; }
-  .hero h1 span { color: var(--purple-light); }
-  .hero p { color: var(--muted); font-size: 14px; line-height: 1.6; }
-  .card { background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; padding: 24px 20px; margin-bottom: 20px; animation: fadeUp 0.5s ease 0.1s both; }
-  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
-  .tab-btn { padding: 8px 16px; border-radius: 99px; border: 1.5px solid rgba(255,255,255,0.15); background: transparent; color: var(--soft); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-  .tab-btn.active { background: linear-gradient(135deg, var(--purple), var(--purple-light)); border-color: var(--purple-light); color: #fff; box-shadow: 0 4px 16px rgba(124,58,237,0.35); }
-  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-  @media(max-width: 480px) { .form-grid { grid-template-columns: 1fr; } }
-  label { display: block; color: var(--soft); font-size: 11px; font-weight: 600; letter-spacing: 0.6px; margin-bottom: 7px; text-transform: uppercase; }
-  select, input, textarea { width: 100%; background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.15); border-radius: 10px; color: #fff; padding: 11px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; transition: border-color 0.2s; -webkit-appearance: none; }
-  select:focus, input:focus, textarea:focus { outline: none; border-color: var(--purple-light); background: rgba(124,58,237,0.1); }
-  select option { background: #1a0a3c; color: #fff; }
-  ::placeholder { color: #6b5fa0; }
-  .field { margin-bottom: 14px; }
-  .btn-generate { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--purple), var(--purple-light)); border: none; border-radius: 12px; color: #fff; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 8px 24px rgba(124,58,237,0.4); letter-spacing: 0.3px; margin-top: 6px; }
-  .btn-generate:disabled { background: rgba(124,58,237,0.35); box-shadow: none; cursor: not-allowed; }
-  .error-msg { background: rgba(127,29,29,0.2); border: 1px solid rgba(248,113,113,0.3); color: #f87171; border-radius: 8px; padding: 10px 14px; font-size: 13px; margin-bottom: 12px; }
-  .loading-wrap { text-align: center; padding: 36px 0; }
-  .spinner { width: 36px; height: 36px; border: 3px solid rgba(168,85,247,0.2); border-top-color: var(--purple-light); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
-  .loading-text { color: var(--muted); font-size: 14px; animation: pulse 1.5s ease infinite; }
-  .result-card { background: #faf9ff; border: 1.5px solid #ede9fe; border-radius: 16px; padding: 22px 20px; }
-  .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-  .result-label { font-family: 'Playfair Display', serif; font-size: 14px; color: var(--purple); font-weight: 700; }
-  .btn-copy { background: #f3f0ff; color: var(--purple); border: none; border-radius: 8px; padding: 6px 14px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; }
-  .btn-copy.copied { background: #d1fae5; color: #065f46; }
-  .result-content { font-family: 'Source Serif 4', serif; font-size: 14px; line-height: 1.85; color: #1e1b2e; white-space: pre-wrap; }
-  .history-section { margin-top: 30px; }
-  .history-title { font-family: 'Playfair Display', serif; color: var(--soft); font-size: 15px; margin-bottom: 12px; }
-  .history-item { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09); border-radius: 12px; padding: 12px 16px; cursor: pointer; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-  .history-tab { color: var(--purple-light); font-weight: 700; font-size: 12px; }
-  .history-topic { color: var(--text); font-size: 13px; margin-left: 8px; }
-  .history-time { color: #6b5fa0; font-size: 11px; }
-  .pricing { margin-top: 40px; }
-  .pricing-title { font-family: 'Playfair Display', serif; color: #fff; font-size: 20px; text-align: center; margin-bottom: 20px; }
-  .pricing-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-  @media(max-width: 480px) { .pricing-grid { grid-template-columns: 1fr; } }
-  .pricing-card { background: rgba(255,255,255,0.04); border: 1.5px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 20px 16px; text-align: center; position: relative; }
-  .pricing-card.popular { background: rgba(124,58,237,0.12); border-color: rgba(168,85,247,0.4); }
-  .popular-badge { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: linear-gradient(90deg, var(--purple), var(--purple-light)); color: #fff; font-size: 9px; font-weight: 700; padding: 3px 10px; border-radius: 99px; letter-spacing: 1px; white-space: nowrap; }
-  .plan-name { color: var(--soft); font-weight: 700; font-size: 14px; margin-bottom: 4px; }
-  .plan-price { font-family: 'Playfair Display', serif; color: #fff; font-size: 22px; font-weight: 700; margin-bottom: 12px; }
-  .plan-feature { color: var(--muted); font-size: 11px; margin-bottom: 5px; }
-  .plan-feature::before { content: "✓ "; color: var(--purple-light); }
-  .whatsapp-float { position: fixed; bottom: 24px; right: 20px; z-index: 999; background: #25D366; color: #fff; border-radius: 99px; padding: 14px 20px; display: flex; align-items: center; gap: 10px; text-decoration: none; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700; box-shadow: 0 8px 30px rgba(37,211,102,0.5); transition: transform 0.2s; }
-  .contact-section { margin-top: 40px; background: rgba(37,211,102,0.07); border: 1.5px solid rgba(37,211,102,0.2); border-radius: 20px; padding: 28px 20px; text-align: center; }
-  .contact-title { font-family: 'Playfair Display', serif; color: #fff; font-size: 20px; margin-bottom: 8px; }
-  .contact-sub { color: #a78bfa; font-size: 13px; margin-bottom: 20px; line-height: 1.6; }
-  .btn-whatsapp { display: inline-flex; align-items: center; gap: 10px; background: #25D366; color: #fff; text-decoration: none; border-radius: 12px; padding: 14px 28px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; box-shadow: 0 8px 24px rgba(37,211,102,0.4); }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solution à Vos Besoins - EduCraft AI</title>
+    <style>
+        :root {
+            --gold: #d4af37;
+            --dark: #0a0a0a;
+            --card-bg: #151515;
+            --text-gray: #a0a0a0;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: white;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            text-align: center;
+            padding: 50px 20px;
+            background: linear-gradient(to bottom, #1a1a1a, var(--dark));
+        }
+
+        .gold-text { color: var(--gold); }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.8rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        /* Style des Cartes */
+        .card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .card-link:hover {
+            transform: translateY(-10px);
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #222;
+            height: 100%;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: var(--gold);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
+        }
+
+        .icon {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .card h3 {
+            margin: 0 0 10px 0;
+            color: var(--gold);
+        }
+
+        .card p {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .badge {
+            background: rgba(212, 175, 55, 0.2);
+            color: var(--gold);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            border-top: 1px solid #222;
+            color: var(--text-gray);
+            font-size: 0.8rem;
+        }
+    </style>
 </head>
 <body>
-<header>
-  <div class="logo-icon">✦</div>
-  <div>
-    <div class="logo-name">EduCraft AI</div>
-    <div class="logo-sub">Créateur de contenu pédagogique</div>
-  </div>
-  <div class="badge">✦ Plan Pro</div>
-</header>
-<div class="container">
-  <div class="hero">
-    <h1>Créez vos contenus<br><span>pédagogiques en secondes</span></h1>
-    <p>Cours, quiz, fiches résumé et plans de leçon<br>générés par IA — prêts à l'emploi.</p>
-  </div>
-  <div class="card">
-    <div class="tabs">
-      <button class="tab-btn active" onclick="setTab(this,'Cours')">Cours</button>
-      <button class="tab-btn" onclick="setTab(this,'Quiz')">Quiz</button>
-      <button class="tab-btn" onclick="setTab(this,'Fiche résumé')">Fiche résumé</button>
-      <button class="tab-btn" onclick="setTab(this,'Plan de leçon')">Plan de leçon</button>
+
+    <header>
+        <h1>Pourquoi choisir <span class="gold-text">Solution à Vos Besoins</span> ?</h1>
+        <p>Pensée pour la réalité guinéenne, accessible à tous.</p>
+    </header>
+
+    <div class="container">
+        <h2>Nos Outils IA Disponibles</h2>
+        
+        <div class="grid">
+            <a href="redacteur.html" class="card-link">
+                <div class="card">
+                    <span class="badge">Populaire</span>
+                    <span class="icon">✍️</span>
+                    <h3>Rédacteur IA</h3>
+                    <p>Générateur de scripts, articles, lettres d'excuse et légendes pour réseaux sociaux.</p>
+                </div>
+            </a>
+
+            <a href="#" class="card-link">
+                <div class="card">
+                    <span class="icon">🎓</span>
+                    <h3>Enseignants</h3>
+                    <p>Créez des cours, des quiz interactifs et des fiches pédagogiques en quelques secondes.</p>
+                </div>
+            </a>
+
+            <a href="#" class="card-link">
+                <div class="card">
+                    <span class="icon">📚</span>
+                    <h3>Élèves & Étudiants</h3>
+                    <p>Aide aux devoirs, résumés intelligents et explications de cours complexes.</p>
+                </div>
+            </a>
+
+            <a href="#" class="card-link">
+                <div class="card">
+                    <span class="icon">💼</span>
+                    <h3>Professionnels</h3>
+                    <p>CV, lettres de motivation, rapports professionnels et présentations mails.</p>
+                </div>
+            </a>
+        </div>
     </div>
-    <div class="form-grid">
-      <div>
-        <label>Matière</label>
-        <select id="subject">
-          <option value="">Choisir...</option>
-          <option>Mathématiques</option>
-          <option>Français</option>
-          <option>Histoire-Géo</option>
-          <option>Sciences</option>
-          <option>Anglais</option>
-          <option>Philosophie</option>
-          <option>Autre</option>
-        </select>
-      </div>
-      <div>
-        <label>Niveau</label>
-        <select id="level">
-          <option value="">Choisir...</option>
-          <option>Primaire</option>
-          <option>Collège</option>
-          <option>Lycée</option>
-          <option>Université</option>
-          <option>Formation pro</option>
-        </select>
-      </div>
-    </div>
-    <div class="field">
-      <label>Sujet / Thème *</label>
-      <input type="text" id="topic" placeholder="Ex: La Révolution Française">
-    </div>
-    <div class="form-grid">
-      <div>
-        <label>Durée</label>
-        <input type="text" id="duration" placeholder="Ex: 1h, 45 min">
-      </div>
-      <div>
-        <label>Instructions supplémentaires</label>
-        <input type="text" id="extra" placeholder="Ex: élèves en difficulté...">
-      </div>
-    </div>
-    <div id="error-msg" class="error-msg" style="display:none"></div>
-    <button class="btn-generate" id="gen-btn" onclick="generate()">✦ Générer — <span id="btn-label">Cours</span></button>
-  </div>
-  <div class="loading-wrap" id="loading" style="display:none">
-    <div class="spinner"></div>
-    <div class="loading-text">L'IA rédige votre contenu…</div>
-  </div>
-  <div class="card" id="result-wrap" style="display:none">
-    <div class="result-card">
-      <div class="result-header">
-        <span class="result-label">Contenu généré</span>
-        <button class="btn-copy" id="copy-btn" onclick="copyResult()">Copier</button>
-      </div>
-      <div class="result-content" id="result-text"></div>
-    </div>
-  </div>
-  <div class="history-section" id="history-section" style="display:none">
-    <div class="history-title">Historique récent</div>
-    <div id="history-list"></div>
-  </div>
-  <div class="pricing">
-    <div class="pricing-title">Tarifs simples et transparents</div>
-    <div class="pricing-grid">
-      <div class="pricing-card">
-        <div class="plan-name">Starter</div>
-        <div class="plan-price">9€<small style="font-size:13px;color:#a78bfa">/mois</small></div>
-        <div class="plan-feature">50 générations/mois</div>
-        <div class="plan-feature">Cours & Quiz</div>
-        <div class="plan-feature">Copier-coller</div>
-      </div>
-      <div class="pricing-card popular">
-        <div class="popular-badge">POPULAIRE</div>
-        <div class="plan-name">Pro</div>
-        <div class="plan-price">29€<small style="font-size:13px;color:#a78bfa">/mois</small></div>
-        <div class="plan-feature">Illimité</div>
-        <div class="plan-feature">Tous les types</div>
-        <div class="plan-feature">Export Word/PDF</div>
-        <div class="plan-feature">Historique</div>
-      </div>
-      <div class="pricing-card">
-        <div class="plan-name">École</div>
-        <div class="plan-price">99€<small style="font-size:13px;color:#a78bfa">/mois</small></div>
-        <div class="plan-feature">Multi-enseignants</div>
-        <div class="plan-feature">Dashboard admin</div>
-        <div class="plan-feature">Support prioritaire</div>
-      </div>
-    </div>
-  </div>
-  <div class="contact-section">
-    <div class="contact-title">Intéressé ? Contactez-nous !</div>
-    <div class="contact-sub">Posez vos questions, demandez une démo ou abonnez-vous.<br>Réponse rapide garantie 😊</div>
-    <a href="https://wa.me/224629839854?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20EduCraft%20AI%20!" class="btn-whatsapp" target="_blank">
-      <span>💬</span> Nous contacter sur WhatsApp
-    </a>
-  </div>
-</div>
-<a href="https://wa.me/224629839854?text=Bonjour%2C%20je%20suis%20int%C3%A9ress%C3%A9%20par%20EduCraft%20AI%20!" class="whatsapp-float" target="_blank">
-  <span>💬</span> WhatsApp
-</a>
-<script>
-let currentTab="Cours",history=[],currentResult="";
-function setTab(btn,tab){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');currentTab=tab;document.getElementById('btn-label').textContent=tab;document.getElementById('result-wrap').style.display='none';const p={"Cours":"Ex: La Révolution Française","Quiz":"Ex: Les fractions","Fiche résumé":"Ex: La photosynthèse","Plan de leçon":"Ex: Introduction à l'algèbre"};document.getElementById('topic').placeholder=p[tab];}
-function buildPrompt(){const s=document.getElementById('subject').value,l=document.getElementById('level').value,t=document.getElementById('topic').value,d=document.getElementById('duration').value,e=document.getElementById('extra').value;const base=`Tu es un expert en pédagogie. Génère en français un contenu professionnel et structuré prêt à l'emploi.\nMatière: ${s||"non précisée"}\nNiveau: ${l||"non précisé"}\nSujet: ${t}\n${d?"Durée: "+d:""}\n${e?"Instructions: "+e:""}`;const i={"Cours":"\nCrée un cours complet avec introduction, objectifs, contenu structuré, exemples et questions.","Quiz":"\nCrée un quiz de 8 QCM avec 4 options, bonne réponse et explication.","Fiche résumé":"\nCrée une fiche résumé avec points essentiels, définitions, formules et astuces.","Plan de leçon":"\nCrée un plan de leçon avec objectifs SMART, matériel, déroulement et évaluation."};return base+i[currentTab];}
-async function generate(){const t=document.getElementById('topic').value.trim(),e=document.getElementById('error-msg');if(!t){e.textContent="⚠ Veuillez entrer un sujet.";e.style.display='block';return;}e.style.display='none';const btn=document.getElementById('gen-btn');btn.disabled=true;btn.textContent="Génération en cours…";document.getElementById('loading').style.display='block';document.getElementById('result-wrap').style.display='none';try{const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:1000,messages:[{role:"user",content:buildPrompt()}]})});const data=await r.json();const text=(data.content||[]).map(b=>b.text||"").join("\n");currentResult=text;document.getElementById('result-text').textContent=text;document.getElementById('result-wrap').style.display='block';const time=new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});history.unshift({tab:currentTab,topic:t,content:text,time});if(history.length>5)history.pop();renderHistory();}catch(err){e.textContent="⚠ Erreur de connexion.";e.style.display='block';}document.getElementById('loading').style.display='none';btn.disabled=false;btn.innerHTML='✦ Générer — <span id="btn-label">'+currentTab+'</span>';}
-function copyResult(){navigator.clipboard.writeText(currentResult).catch(()=>{const ta=document.createElement('textarea');ta.value=currentResult;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);});const btn=document.getElementById('copy-btn');btn.textContent="✓ Copié!";btn.classList.add('copied');setTimeout(()=>{btn.textContent="Copier";btn.classList.remove('copied');},1800);}
-function renderHistory(){const s=document.getElementById('history-section'),l=document.getElementById('history-list');if(!history.length){s.style.display='none';return;}s.style.display='block';l.innerHTML=history.map((item,i)=>`<div class="history-item" onclick="loadHistory(${i})"><div><span class="history-tab">${item.tab}</span><span class="history-topic">${item.topic}</span></div><span class="history-time">${item.time}</span></div>`).join('');}
-function loadHistory(i){currentResult=history[i].content;document.getElementById('result-text').textContent=history[i].content;document.getElementById('result-wrap').style.display='block';}
-</script>
+
+    <footer>
+        &copy; 2026 EduCraft AI - Faranah, Guinée. <br>
+        Optimisé pour les connexions lentes.
+    </footer>
+
 </body>
-          </html>    
+</html>
