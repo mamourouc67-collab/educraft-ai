@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rédacteur IA - EduCraft</title>
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: #151515;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #d4af37; /* Couleur Or */
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.1);
+        }
+        h1 { color: #d4af37; text-align: center; }
+        label { display: block; margin-bottom: 10px; font-weight: bold; }
+        textarea, input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #d4af37, #f2d06b);
+            border: none;
+            border-radius: 8px;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #resultat {
+            margin-top: 30px;
+            padding: 20px;
+            background: #111;
+            border-left: 4px solid #d4af37;
+            min-height: 50px;
+            white-space: pre-wrap;
+        }
+        .back-btn {
+            margin-bottom: 20px;
+            color: #d4af37;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <a href="index.html" class="back-btn">← Retour à l'accueil</a>
+        <h1>Rédacteur IA</h1>
+        <p>Générez des articles ou des lettres en un clic.</p>
+
+        <label for="sujet">De quoi voulez-vous parler ?</label>
+        <textarea id="sujet" rows="4" placeholder="Ex: Une lettre d'excuse pour le DSEE ou un article sur Faranah..."></textarea>
+
+        <button onclick="genererTexte()">Générer le contenu ✨</button>
+
+        <div id="resultat">Le texte généré apparaîtra ici...</div>
+    </div>
+
+    <script>
+        function genererTexte() {
+            const sujet = document.getElementById('sujet').value;
+            const affichage = document.getElementById('resultat');
+
+            if(!sujet) {
+                alert("Veuillez entrer un sujet !");
+                return;
+            }
+
+            affichage.innerHTML = "L'IA réfléchit... (Connexion à l'API en cours)";
+            
+            // Note : Ici nous devrons connecter ton API Netlify plus tard
+            setTimeout(() => {
+                affichage.innerHTML = "Félicitations ! Votre outil est maintenant lié à cette page. Pour que l'IA réponde vraiment, nous devrons ajouter ta clé API dans Netlify à l'étape suivante.";
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
+
