@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Rédacteur — Éditeur de Texte</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #F7F4EF;
+    --surface: #FFFFFF;
+    --ink: #1C1C1E;
+    --ink-muted: #6B6B70;
+    --ink-faint: #C2BDB6;
+    --accent: #2563EB;
+    --accent-soft: #EEF3FD;
+    --border: #E4DED6;
+    --toolbar-h: 52px;
+    --statusbar-h: 32px;
+    --sidebar-w: 220px;
+    --radius: 8px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ── TOP BAR ── */
+  #topbar {
+    height: 48px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+    flex-shrink: 0;
+    box-shadow: var(--shadow);
+    z-index: 10;
+  }
+
+  #app-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.3px;
+    margin-right: 8px;
+    white-space: nowrap;
+  }
+
+  #doc-title {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    background: transparent;
+    min-width: 0;
+  }
+  #doc-title::placeholder { color: var(--ink-faint); }
+
+  .topbar-actions { display: flex; gap: 8px; margin-left: auto; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius);
+    border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-ghost { background: transparent; color: var(--ink-muted); }
+  .btn-ghost:hover { background: var(--bg); color: var(--ink); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #1D4ED8; }
+
+  /* ── TOOLBAR ── */
+  #toolbar {
+    height: var(--toolbar-h);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 2px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  .tb-sep {
+    width: 1px; height: 22px;
+    background: var(--border);
+    margin: 0 6px;
+    flex-shrink: 0;
+  }
+
+  .tb-btn {
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    border: none; background: transparent; cursor: pointer;
+    border-radius: 5px;
+    color: var(--ink-muted);
+    font-size: 14px; font-weight: 600;
+    transition: background 0.12s, color 0.12s;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .tb-btn:hover { background: var(--accent-soft); color: var(--accent); }
+  .tb-btn.active { background: var(--accent-soft); color: var(--accent); }
+  .tb-btn[title]:hover::after {
+    content: attr(title);
+    position: absolute; top: 36px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: #fff;
+    font-size: 11px; font-weight: 400; font-family: 'DM Sans', sans-serif;
+    padding: 3px 8px; border-radius: 4px; white-space: nowrap;
+    pointer-events: none; z-index: 100;
+  }
+
+  select.tb-select {
+    height: 30px; border: 1px solid var(--border);
+    border-radius: 5px; background: transparent;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    color: var(--ink); padding: 0 8px; cursor: pointer;
+    outline: none;
+  }
+  select.tb-select:focus { border-color: var(--accent); }
+
+  input.tb-size {
+    width: 44px; height: 30px;
+    border: 1px solid var(--border); border-radius: 5px;
+    background: transparent; font-family: 'DM Sans', sans-serif;
+    font-size: 13px; color: var(--ink); text-align: center;
+    outline: none;
+  }
+  input.tb-size:focus { border-color: var(--accent); }
+
+  /* ── MAIN AREA ── */
+  #main {
+    flex: 1; display: flex; overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  #sidebar {
+    width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    flex-shrink: 0;
+    overflow-y: auto;
+    padding: 16px 12px;
+    gap: 20px;
+  }
+
+  .side-section-title {
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--ink-faint); margin-bottom: 8px;
+  }
+
+  .style-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .chip {
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 12px; cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--bg); color: var(--ink-muted);
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .chip:hover, .chip.active {
+    border-color: var(--accent); background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .color-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .color-dot {
+    width: 22px; height: 22px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: transform 0.15s;
+  }
+  .color-dot:hover { transform: scale(1.15); }
+  .color-dot.selected { border-color: var(--accent); }
+
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-box {
+    background: var(--bg); border-radius: var(--radius);
+    padding: 10px; text-align: center;
+  }
+  .stat-num { font-size: 20px; font-weight: 600; color: var(--ink); }
+  .stat-label { font-size: 10px; color: var(--ink-muted); margin-top: 2px; }
+
+  /* ── EDITOR ZONE ── */
+  #editor-zone {
+    flex: 1; overflow-y: auto;
+    padding: 40px 20px;
+    display: flex; justify-content: center;
+    background: var(--bg);
+  }
+
+  #page {
+    width: 100%; max-width: 760px;
+    min-height: 1060px;
+    background: var(--surface);
+    border-radius: 4px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    padding: 64px 72px;
+  }
+
+  #editor {
+    min-height: 900px;
+    outline: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; line-height: 1.8;
+    color: var(--ink);
+    caret-color: var(--accent);
+  }
+  #editor:empty::before {
+    content: attr(data-placeholder);
+    color: var(--ink-faint);
+    pointer-events: none;
+  }
+
+  /* ── STATUS BAR ── */
+  #statusbar {
+    height: var(--statusbar-h);
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 16px; gap: 20px;
+    font-size: 12px; color: var(--ink-muted);
+    flex-shrink: 0;
+  }
+  #statusbar span { display: flex; align-items: center; gap: 4px; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #22C55E; }
+
+  /* ── FIND/REPLACE ── */
+  #find-bar {
+    display: none; align-items: center; gap: 8px;
+    padding: 8px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  #find-bar.visible { display: flex; }
+  #find-bar input {
+    padding: 5px 10px; border: 1px solid var(--border);
+    border-radius: 5px; outline: none; font-size: 13px;
+    font-family: 'DM Sans', sans-serif; width: 180px;
+  }
+  #find-bar input:focus { border-color: var(--accent); }
+  #find-result { color: var(--ink-muted); min-width: 60px; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--ink-faint); border-radius: 3px; }
+
+  /* Fade in */
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(10px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  #page { animation: fadeUp 0.35s ease both; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <span id="app-name">✦ Rédacteur</span>
+  <input id="doc-title" type="text" placeholder="Titre du document…" spellcheck="false"/>
+  <div class="topbar-actions">
+    <button class="btn btn-ghost" onclick="printDoc()">🖨 Imprimer</button>
+    <button class="btn btn-ghost" onclick="exportTxt()">⬇ .txt</button>
+    <button class="btn btn-ghost" onclick="exportHtml()">⬇ .html</button>
+    <button class="btn btn-primary" onclick="saveLocal()">💾 Sauvegarder</button>
+  </div>
+</div>
+
+<!-- TOOLBAR -->
+<div id="toolbar">
+  <!-- Font family -->
+  <select class="tb-select" id="fontFamily" onchange="execCmd('fontName', this.value)" title="Police">
+    <option value="'DM Sans', sans-serif">DM Sans</option>
+    <option value="'Playfair Display', serif">Playfair Display</option>
+    <option value="Georgia, serif">Georgia</option>
+    <option value="'Courier New', monospace">Courier New</option>
+    <option value="'Arial', sans-serif">Arial</option>
+  </select>
+
+  <!-- Font size -->
+  <input class="tb-size" type="number" id="fontSize" value="15" min="8" max="72"
+         onchange="setFontSize(this.value)" title="Taille"/>
+
+  <div class="tb-sep"></div>
+
+  <!-- Formatting -->
+  <button class="tb-btn" title="Gras (Ctrl+B)" onclick="execCmd('bold')"><b>B</b></button>
+  <button class="tb-btn" title="Italique (Ctrl+I)" onclick="execCmd('italic')"><i>I</i></button>
+  <button class="tb-btn" title="Souligné (Ctrl+U)" onclick="execCmd('underline')"><u>U</u></button>
+  <button class="tb-btn" title="Barré" onclick="execCmd('strikeThrough')"><s>S</s></button>
+
+  <div class="tb-sep"></div>
+
+  <!-- Headings -->
+  <button class="tb-btn" title="Titre 1" onclick="execCmd('formatBlock','h1')" style="font-size:13px;font-weight:700">H1</button>
+  <button class="tb-btn" title="Titre 2" onclick="execCmd('formatBlock','h2')" style="font-size:13px;font-weight:600">H2</button>
+  <button class="tb-btn" title="Titre 3" onclick="execCmd('formatBlock','h3')" style="font-size:12px;font-weight:600">H3</button>
+  <button class="tb-btn" title="Paragraphe" onclick="execCmd('formatBlock','p')" style="font-size:13px">¶</button>
+
+  <div class="tb-sep"></div>
+
+  <!-- Alignment -->
+  <button class="tb-btn" title="Gauche" onclick="execCmd('justifyLeft')">⬡L</button>
+  <button class="tb-btn" title="Centré" onclick="execCmd('justifyCenter')">⬡C</button>
+  <button class="tb-btn" title="Droite" onclick="execCmd('justifyRight')">⬡R</button>
+  <button class="tb-btn" title="Justifié" onclick="execCmd('justifyFull')">⬡J</button>
+
+  <div class="tb-sep"></div>
+
+  <!-- Lists -->
+  <button class="tb-btn" title="Liste à puces" onclick="execCmd('insertUnorderedList')">• —</button>
+  <button class="tb-btn" title="Liste numérotée" onclick="execCmd('insertOrderedList')">1.</button>
+  <button class="tb-btn" title="Citation" onclick="execCmd('formatBlock','blockquote')" style="font-size:16px">"</button>
+  <button class="tb-btn" title="Code" onclick="wrapCode()" style="font-family:monospace">&lt;/&gt;</button>
+
+  <div class="tb-sep"></div>
+
+  <!-- Indent -->
+  <button class="tb-btn" title="Augmenter l'indentation" onclick="execCmd('indent')">→</button>
+  <button class="tb-btn" title="Diminuer l'indentation" onclick="execCmd('outdent')">←</button>
+
+  <div class="tb-sep"></div>
+
+  <!-- Link & clear -->
+  <button class="tb-btn" title="Insérer un lien" onclick="insertLink()">🔗</button>
+  <button class="tb-btn" title="Supprimer la mise en forme" onclick="execCmd('removeFormat')">✕</button>
+
+  <div class="tb-sep"></div>
+
+  <!-- Undo / Redo -->
+  <button class="tb-btn" title="Annuler (Ctrl+Z)" onclick="document.execCommand('undo')">↩</button>
+  <button class="tb-btn" title="Rétablir (Ctrl+Y)" onclick="document.execCommand('redo')">↪</button>
+
+  <div class="tb-sep"></div>
+
+  <!-- Find -->
+  <button class="tb-btn" title="Rechercher (Ctrl+F)" onclick="toggleFind()">🔍</button>
+</div>
+
+<!-- FIND BAR -->
+<div id="find-bar">
+  <input type="text" id="find-input" placeholder="Rechercher…" oninput="doFind()"/>
+  <input type="text" id="replace-input" placeholder="Remplacer par…"/>
+  <button class="btn btn-ghost" onclick="doReplace()">Remplacer</button>
+  <span id="find-result"></span>
+  <button class="btn btn-ghost" style="margin-left:auto" onclick="toggleFind()">✕</button>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+
+    <div>
+      <div class="side-section-title">Style de paragraphe</div>
+      <div class="style-chips">
+        <span class="chip" onclick="execCmd('formatBlock','p');setChip(this,'para')">Normal</span>
+        <span class="chip" onclick="execCmd('formatBlock','h1');setChip(this,'para')">Titre 1</span>
+        <span class="chip" onclick="execCmd('formatBlock','h2');setChip(this,'para')">Titre 2</span>
+        <span class="chip" onclick="execCmd('formatBlock','h3');setChip(this,'para')">Titre 3</span>
+        <span class="chip" onclick="execCmd('formatBlock','blockquote');setChip(this,'para')">Citation</span>
+        <span class="chip" onclick="execCmd('formatBlock','pre');setChip(this,'para')">Code</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="side-section-title">Couleur du texte</div>
+      <div class="color-row" id="text-colors">
+        <div class="color-dot" style="background:#1C1C1E" title="Noir" onclick="setTextColor(this,'#1C1C1E')"></div>
+        <div class="color-dot" style="background:#2563EB" title="Bleu" onclick="setTextColor(this,'#2563EB')"></div>
+        <div class="color-dot" style="background:#DC2626" title="Rouge" onclick="setTextColor(this,'#DC2626')"></div>
+        <div class="color-dot" style="background:#16A34A" title="Vert" onclick="setTextColor(this,'#16A34A')"></div>
+        <div class="color-dot" style="background:#9333EA" title="Violet" onclick="setTextColor(this,'#9333EA')"></div>
+        <div class="color-dot" style="background:#D97706" title="Orange" onclick="setTextColor(this,'#D97706')"></div>
+        <div class="color-dot" style="background:#6B6B70" title="Gris" onclick="setTextColor(this,'#6B6B70')"></div>
+        <div class="color-dot" style="background:#FFFFFF;border:1.5px solid #ccc" title="Blanc" onclick="setTextColor(this,'#FFFFFF')"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="side-section-title">Surlignage</div>
+      <div class="color-row" id="hl-colors">
+        <div class="color-dot" style="background:#FEF08A" onclick="setHighlight(this,'#FEF08A')"></div>
+        <div class="color-dot" style="background:#BBF7D0" onclick="setHighlight(this,'#BBF7D0')"></div>
+        <div class="color-dot" style="background:#BFDBFE" onclick="setHighlight(this,'#BFDBFE')"></div>
+        <div class="color-dot" style="background:#FECACA" onclick="setHighlight(this,'#FECACA')"></div>
+        <div class="color-dot" style="background:#E9D5FF" onclick="setHighlight(this,'#E9D5FF')"></div>
+        <div class="color-dot" style="background:transparent;border:1.5px solid #ccc" title="Effacer" onclick="setHighlight(this,'transparent')"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="side-section-title">Interligne</div>
+      <div class="style-chips">
+        <span class="chip" onclick="setLineHeight('1.4')">Serré</span>
+        <span class="chip active" onclick="setLineHeight('1.8')">Normal</span>
+        <span class="chip" onclick="setLineHeight('2.2')">Aéré</span>
+        <span class="chip" onclick="setLineHeight('2.8')">Large</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="side-section-title">Statistiques</div>
+      <div class="stat-grid">
+        <div class="stat-box"><div class="stat-num" id="stat-words">0</div><div class="stat-label">mots</div></div>
+        <div class="stat-box"><div class="stat-num" id="stat-chars">0</div><div class="stat-label">caractères</div></div>
+        <div class="stat-box"><div class="stat-num" id="stat-lines">1</div><div class="stat-label">lignes</div></div>
+        <div class="stat-box"><div class="stat-num" id="stat-read">0</div><div class="stat-label">min lecture</div></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="side-section-title">Mode d'affichage</div>
+      <div class="style-chips">
+        <span class="chip active" onclick="setTheme('light',this)">☀ Clair</span>
+        <span class="chip" onclick="setTheme('dark',this)">🌙 Sombre</span>
+        <span class="chip" onclick="setTheme('sepia',this)">📜 Sépia</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- EDITOR -->
+  <div id="editor-zone">
+    <div id="page">
+      <div id="editor"
+           contenteditable="true"
+           spellcheck="true"
+           data-placeholder="Commencez à rédiger votre document…"
+           oninput="updateStats(); autoSave()">
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- STATUS BAR -->
+<div id="statusbar">
+  <span><span class="status-dot"></span> Prêt</span>
+  <span id="status-saved">✓ Sauvegarde automatique active</span>
+  <span style="margin-left:auto" id="status-time"></span>
+</div>
+
+<script>
+  const editor = document.getElementById('editor');
+
+  // ── EXEC COMMAND ──
+  function execCmd(cmd, val = null) {
+    editor.focus();
+    document.execCommand(cmd, false, val);
+    updateStats();
+  }
+
+  // ── FONT SIZE ──
+  function setFontSize(size) {
+    editor.focus();
+    document.execCommand('fontSize', false, 7);
+    const els = editor.querySelectorAll('font[size="7"]');
+    els.forEach(el => {
+      el.removeAttribute('size');
+      el.style.fontSize = size + 'px';
+    });
+  }
+
+  // ── WRAP CODE ──
+  function wrapCode() {
+    const sel = window.getSelection();
+    if (!sel.rangeCount) return;
+    const range = sel.getRangeAt(0);
+    const code = document.createElement('code');
+    code.style.background = '#F0F0F0';
+    code.style.padding = '1px 5px';
+    code.style.borderRadius = '3px';
+    code.style.fontFamily = 'monospace';
+    code.style.fontSize = '13px';
+    range.surroundContents(code);
+  }
+
+  // ── INSERT LINK ──
+  function insertLink() {
+    const url = prompt('URL du lien :');
+    if (url) execCmd('createLink', url);
+  }
+
+  // ── TEXT COLOR ──
+  function setTextColor(el, color) {
+    document.querySelectorAll('#text-colors .color-dot').forEach(d => d.classList.remove('selected'));
+    el.classList.add('selected');
+    execCmd('foreColor', color);
+  }
+
+  // ── HIGHLIGHT ──
+  function setHighlight(el, color) {
+    document.querySelectorAll('#hl-colors .color-dot').forEach(d => d.classList.remove('selected'));
+    el.classList.add('selected');
+    execCmd('hiliteColor', color);
+  }
+
+  // ── LINE HEIGHT ──
+  function setLineHeight(val) {
+    editor.style.lineHeight = val;
+  }
+
+  // ── CHIP SELECT ──
+  function setChip(el, group) {
+    el.closest('.style-chips').querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // ── STATS ──
+  function updateStats() {
+    const text = editor.innerText || '';
+    const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+    const chars = text.replace(/\n/g,'').length;
+    const lines = text.split('\n').length;
+    const readMin = Math.ceil(words / 200);
+    document.getElementById('stat-words').textContent = words;
+    document.getElementById('stat-chars').textContent = chars;
+    document.getElementById('stat-lines').textContent = lines;
+    document.getElementById('stat-read').textContent = readMin || 0;
+  }
+
+  // ── AUTO SAVE ──
+  let saveTimeout;
+  function autoSave() {
+    clearTimeout(saveTimeout);
+    document.getElementById('status-saved').textContent = '… Modification en cours';
+    saveTimeout = setTimeout(() => {
+      const title = document.getElementById('doc-title').value || 'Sans titre';
+      const content = editor.innerHTML;
+      localStorage.setItem('redacteur_content', content);
+      localStorage.setItem('redacteur_title', title);
+      document.getElementById('status-saved').textContent = '✓ Sauvegardé automatiquement';
+    }, 1200);
+  }
+
+  // ── MANUAL SAVE ──
+  function saveLocal() {
+    const title = document.getElementById('doc-title').value || 'Sans titre';
+    localStorage.setItem('redacteur_content', editor.innerHTML);
+    localStorage.setItem('redacteur_title', title);
+    document.getElementById('status-saved').textContent = '✓ Document sauvegardé !';
+    setTimeout(() => document.getElementById('status-saved').textContent = '✓ Sauvegarde automatique active', 2000);
+  }
+
+  // ── EXPORT TXT ──
+  function exportTxt() {
+    const text = editor.innerText;
+    const title = document.getElementById('doc-title').value || 'document';
+    const blob = new Blob([text], {type: 'text/plain;charset=utf-8'});
+    download(blob, title + '.txt');
+  }
+
+  // ── EXPORT HTML ──
+  function exportHtml() {
+    const title = document.getElementById('doc-title').value || 'document';
+    const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title></head><body>${editor.innerHTML}</body></html>`;
+    const blob = new Blob([html], {type: 'text/html;charset=utf-8'});
+    download(blob, title + '.html');
+  }
+
+  function download(blob, name) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    a.click();
+  }
+
+  // ── PRINT ──
+  function printDoc() { window.print(); }
+
+  // ── FIND / REPLACE ──
+  function toggleFind() {
+    const bar = document.getElementById('find-bar');
+    bar.classList.toggle('visible');
+    if (bar.classList.contains('visible')) document.getElementById('find-input').focus();
+  }
+
+  function doFind() {
+    const q = document.getElementById('find-input').value;
+    const res = document.getElementById('find-result');
+    if (!q) { res.textContent = ''; return; }
+    const text = editor.innerText;
+    const count = (text.match(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi')) || []).length;
+    res.textContent = count ? `${count} résultat(s)` : 'Aucun résultat';
+  }
+
+  function doReplace() {
+    const find    = document.getElementById('find-input').value;
+    const replace = document.getElementById('replace-input').value;
+    if (!find) return;
+    editor.innerHTML = editor.innerHTML.replaceAll(find, replace);
+    doFind();
+  }
+
+  // ── THEME ──
+  function setTheme(theme, el) {
+    el.closest('.style-chips').querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    const root = document.documentElement;
+    if (theme === 'dark') {
+      root.style.setProperty('--bg','#1A1A1E');
+      root.style.setProperty('--surface','#26262B');
+      root.style.setProperty('--ink','#F2F2F4');
+      root.style.setProperty('--ink-muted','#A0A0A8');
+      root.style.setProperty('--border','#3A3A42');
+    } else if (theme === 'sepia') {
+      root.style.setProperty('--bg','#F5ECD7');
+      root.style.setProperty('--surface','#FBF5E6');
+      root.style.setProperty('--ink','#3B2B1A');
+      root.style.setProperty('--ink-muted','#8A6E50');
+      root.style.setProperty('--border','#D9C9AE');
+    } else {
+      root.style.setProperty('--bg','#F7F4EF');
+      root.style.setProperty('--surface','#FFFFFF');
+      root.style.setProperty('--ink','#1C1C1E');
+      root.style.setProperty('--ink-muted','#6B6B70');
+      root.style.setProperty('--border','#E4DED6');
+    }
+  }
+
+  // ── KEYBOARD SHORTCUTS ──
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'f') { e.preventDefault(); toggleFind(); }
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); saveLocal(); }
+  });
+
+  // ── CLOCK ──
+  function updateClock() {
+    document.getElementById('status-time').textContent =
+      new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // ── RESTORE ──
+  window.onload = () => {
+    const saved = localStorage.getItem('redacteur_content');
+    const title = localStorage.getItem('redacteur_title');
+    if (saved) editor.innerHTML = saved;
+    if (title) document.getElementById('doc-title').value = title;
+    updateStats();
+  };
+</script>
+</body>
+</html>
+
