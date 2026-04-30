@@ -55,6 +55,7 @@ nav {
 .hero h1 {
     font-size: 2.2rem;
     margin-bottom: 15px;
+    line-height: 1.2;
 }
 
 .hero p {
@@ -73,14 +74,9 @@ nav {
     font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
-    transition: transform 0.3s;
 }
 
-.btn-main:hover {
-    transform: scale(1.05);
-}
-
-/* --- SYSTÈME DE COLONNES (RESPONSIVE) --- */
+/* --- SYSTÈME DE COLONNES --- */
 .container {
     padding: 60px 5%;
     text-align: center;
@@ -93,19 +89,18 @@ nav {
 
 .row {
     display: flex;
-    flex-wrap: wrap; /* Important pour mobile */
+    flex-wrap: wrap;
     gap: 25px;
     justify-content: center;
 }
 
 .col {
     flex: 1;
-    min-width: 280px; /* Force le passage à la ligne sur petit écran */
+    min-width: 280px;
     background: white;
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-    transition: y 0.3s;
 }
 
 .icon {
