@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr" class="notranslate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Quiz — EduCraft AI</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <nav class="navbar">
+            <div class="logo">EduCraft <span>IA</span></div>
+            <ul class="nav-links">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="#">Mes Quiz</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="container">
+        <div class="quiz-form-box">
+            <h1>Générateur de Quiz 📝</h1>
+            <p>Remplissez les détails ci-dessous pour générer un quiz personnalisé en quelques secondes.</p>
+
+            <form id="quiz-generator">
+                <div class="form-group">
+                    <label>Sujet du cours</label>
+                    <input type="text" placeholder="Ex: La photosynthèse, La Révolution Française...">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Niveau scolaire</label>
+                        <select>
+                            <option>Primaire</option>
+                            <option>Collège</option>
+                            <option>Lycée</option>
+                            <option>Université</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nombre de questions</label>
+                        <input type="number" min="1" max="20" value="5">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Type de questions</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="type" checked> QCM (Choix multiples)</label>
+                        <label><input type="radio" name="type"> Vrai / Faux</label>
+                        <label><input type="radio" name="type"> Questions ouvertes</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-cta-large">Générer le quiz avec l'IA</button>
+            </form>
+        </div>
+    </section>
+
+</body>
+</html>
+
