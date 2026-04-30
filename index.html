@@ -1,169 +1,64 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solution à Vos Besoins - EduCraft AI</title>
-    <style>
-        :root {
-            --gold: #d4af37;
-            --dark: #0a0a0a;
-            --card-bg: #151515;
-            --text-gray: #a0a0a0;
-        }
-
-        body {
-            background-color: var(--dark);
-            color: white;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-        }
-
-        header {
-            text-align: center;
-            padding: 50px 20px;
-            background: linear-gradient(to bottom, #1a1a1a, var(--dark));
-        }
-
-        .gold-text { color: var(--gold); }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        h2 {
-            text-align: center;
-            margin-bottom: 40px;
-            font-size: 1.8rem;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin-bottom: 50px;
-        }
-
-        /* Style des Cartes */
-        .card-link {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            transition: transform 0.3s ease;
-        }
-
-        .card-link:hover {
-            transform: translateY(-10px);
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 15px;
-            border: 1px solid #222;
-            height: 100%;
-            box-sizing: border-box;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card:hover {
-            border-color: var(--gold);
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.1);
-        }
-
-        .icon {
-            font-size: 2rem;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        .card h3 {
-            margin: 0 0 10px 0;
-            color: var(--gold);
-        }
-
-        .card p {
-            color: var(--text-gray);
-            font-size: 0.95rem;
-            margin: 0;
-        }
-
-        .badge {
-            background: rgba(212, 175, 55, 0.2);
-            color: var(--gold);
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-
-        footer {
-            text-align: center;
-            padding: 40px;
-            border-top: 1px solid #222;
-            color: var(--text-gray);
-            font-size: 0.8rem;
-        }
-    </style>
+    <title>EduCraft AI — Planification Intelligente</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <header>
-        <h1>Pourquoi choisir <span class="gold-text">Solution à Vos Besoins</span> ?</h1>
-        <p>Pensée pour la réalité guinéenne, accessible à tous.</p>
+        <nav class="navbar">
+            <div class="logo">EduCraft <span>IA</span></div>
+            <ul class="nav-links">
+                <li><a href="#">Caractéristiques</a></li>
+                <li><a href="#">Comment ça marche</a></li>
+                <li><a href="#">Tarification</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <a href="#" class="btn-login">Se connecter</a>
+                <a href="#" class="btn-cta">Commencez gratuitement</a>
+            </div>
+        </nav>
     </header>
 
-    <div class="container">
-        <h2>Nos Outils IA Disponibles</h2>
-        
-        <div class="grid">
-            <a href="redacteur.html" class="card-link">
-                <div class="card">
-                    <span class="badge">Populaire</span>
-                    <span class="icon">✍️</span>
-                    <h3>Rédacteur IA</h3>
-                    <p>Générateur de scripts, articles, lettres d'excuse et légendes pour réseaux sociaux.</p>
-                </div>
-            </a>
-
-            <a href="#" class="card-link">
-                <div class="card">
-                    <span class="icon">🎓</span>
-                    <h3>Enseignants</h3>
-                    <p>Créez des cours, des quiz interactifs et des fiches pédagogiques en quelques secondes.</p>
-                </div>
-            </a>
-
-            <a href="#" class="card-link">
-                <div class="card">
-                    <span class="icon">📚</span>
-                    <h3>Élèves & Étudiants</h3>
-                    <p>Aide aux devoirs, résumés intelligents et explications de cours complexes.</p>
-                </div>
-            </a>
-
-            <a href="#" class="card-link">
-                <div class="card">
-                    <span class="icon">💼</span>
-                    <h3>Professionnels</h3>
-                    <p>CV, lettres de motivation, rapports professionnels et présentations mails.</p>
-                </div>
-            </a>
+    <section class="hero">
+        <div class="hero-content">
+            <span class="badge">● En direct dès maintenant — Les 50 États</span>
+            <h1>Des plans de cours conformes à <span>toutes les normes</span>, instantanément</h1>
+            <p>Choisissez votre État, votre matière et votre niveau. L'IA d'EduCraft génère en quelques secondes des plans de cours différenciés.</p>
+            <div class="hero-actions">
+                <button class="btn-cta-large">Commencez votre essai gratuit</button>
+                <button class="btn-outline">Aperçu de l'application</button>
+            </div>
+            <p class="social-proof">Utilisé par plus de 24 000 enseignants dans le monde entier</p>
         </div>
-    </div>
+        <div class="hero-image">
+            <img src="https://via.placeholder.com/500x400" alt="Interface IA">
+        </div>
+    </section>
 
-    <footer>
-        &copy; 2026 EduCraft AI - Faranah, Guinée. <br>
-        Optimisé pour les connexions lentes.
-    </footer>
+    <section class="stats">
+        <div class="stat-item">
+            <h2>Plus de 24 000</h2>
+            <p>éducateurs actifs</p>
+        </div>
+        <div class="stat-item">
+            <h2>Plus de 180 000</h2>
+            <p>Plans de cours créés</p>
+        </div>
+        <div class="stat-item">
+            <h2>50</h2>
+            <p>États couverts</p>
+        </div>
+        <div class="stat-item">
+            <h2>4 min</h2>
+            <p>Plan moyen créé</p>
+        </div>
+    </section>
 
 </body>
 </html>
