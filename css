@@ -33,7 +33,16 @@ body {
 .logo {
     font-weight: 700;
     font-size: 1.5rem;
-    color: var(--primary-color);
+    color: var(--primary-color); <script>
+    const menu = document.querySelector('#mobile-menu');
+    const menuLinks = document.querySelector('.nav-links');
+
+    menu.addEventListener('click', () => {
+        menu.classList.toggle('is-active');
+        menuLinks.classList.toggle('active');
+    });
+</script>
+
 }
 
 .nav-links {
