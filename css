@@ -1,5 +1,142 @@
+:root {
+    --primary-color: #064e3b; /* Vert profond du site */
+    --accent-color: #0f766e;  /* Vert bouton */
+    --text-dark: #1f2937;
+    --bg-light: #fdfbf7;      /* Fond crème léger */
+    --white: #ffffff;
+    --gold: #f59e0b;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 8%;
+    background: var(--white);
+    border-bottom: 1px solid #eee;
+}
+
 .logo {
-  height: 50px; /* Ajuste la hauteur selon tes besoins */
-  width: auto;  /* Garde les proportions de l'image */
-  display: block;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.btn-cta {
+    background: var(--accent-color);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+/* Hero Section */
+.hero {
+    display: flex;
+    align-items: center;
+    padding: 80px 8%;
+    gap: 50px;
+}
+
+.hero-content {
+    flex: 1;
+}
+
+.badge {
+    background: #fef3c7;
+    color: var(--gold);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.hero h1 {
+    font-size: 3rem;
+    margin: 20px 0;
+    line-height: 1.2;
+    color: var(--primary-color);
+}
+
+.hero h1 span {
+    text-decoration: underline;
+}
+
+.hero-actions {
+    margin: 30px 0;
+    display: flex;
+    gap: 15px;
+}
+
+.btn-cta-large {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #ccc;
+    padding: 15px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Section Stats */
+.stats {
+    background: var(--primary-color);
+    color: var(--white);
+    display: flex;
+    justify-content: space-around;
+    padding: 60px 8%;
+    text-align: center;
+}
+
+.stats h2 {
+    font-size: 2rem;
+    color: var(--gold);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero {
+        flex-direction: column;
+        text-align: center;
+    }
+    .nav-links {
+        display: none;
+    }
+    .hero-actions {
+        justify-content: center;
+    }
 }
