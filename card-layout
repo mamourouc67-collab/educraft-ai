@@ -1,0 +1,15 @@
+<section class="features">
+    <div class="feature-card yellow">
+        <h3>Générateur de leçons IA</h3>
+        <p>Décrivez votre niveau, choisissez les niveaux de Bloom...</p>
+    </div>
+    <div class="feature-card blue">
+        <h3>Les normes des 50 États</h3>
+        <p>Parcourez les référentiels Common Core, TEKS, NGSS...</p>
+    </div>
+    <div class="feature-card pink">
+        <h3>Bibliothèque communautaire</h3>
+        <p>Publiez vos leçons. Parcourez plus de 180 000 ressources...</p>
+    </div>
+</section>
+
