@@ -1,0 +1,46 @@
+/* Section des fonctionnalités */
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    padding: 60px 8%;
+    background-color: #fdfbf7;
+}
+
+/* Style de base des cartes */
+.feature-card {
+    padding: 40px;
+    border-radius: 20px;
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.feature-card:hover {
+    transform: translateY(-10px); /* Petit effet de survol pro */
+}
+
+.feature-card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: #1f2937;
+}
+
+.feature-card p {
+    color: #4b5563;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* Couleurs personnalisées selon tes classes HTML */
+.yellow {
+    background-color: #fef3c7; /* Jaune pastel */
+}
+
+.blue {
+    background-color: #e0f2fe; /* Bleu/Turquoise très clair */
+}
+
+.pink {
+    background-color: #fee2e2; /* Rose/Pêche très clair */
+}
+
